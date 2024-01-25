@@ -1,34 +1,35 @@
 import tkinter as tk
-import serial
+from serial import Serial
 import time
 
-arduino_port = "/dev/ttyACM0"  # Change this to your Arduino port
-arduino_baudrate = 9600
+# تنظیمات اتصال سریال
+arduino_port = "COM5"  # تنظیمات پورت اردوینو (ممکن است تغییر کند)
+baud_rate = 9600
 
-def send_data():
-    entered_data = entry.get()
-    print("Data entered:", entered_data)
-    
-    try:
-        with serial.Serial(arduino_port, arduino_baudrate, timeout=1) as ser:
-            ser.write(entered_data.encode() + b'\n')  # Add a newline character
-            time.sleep(2)  # Wait for Arduino to process and respond
-            response = ser.readline().decode().strip()
-            print("Arduino response:", response)
-    except serial.SerialException as e:
-        print("Error communicating with Arduino:", e)
+# تابع ارسال دستور به Arduino
+def send_to_arduino(word):
+    with Serial(arduino_port, baud_rate, timeout=1) as ser:
+        ser.write(word.encode('utf-8'))
+        time.sleep(1)  # انتظار کوتاه برای اطمینان از انجام کامل ارسال
 
-# Create the main window
-window = tk.Tk()
-window.title("Data Sender")
+# تابع برای کنترل دکمه ارسال
+def send_button_click():
+    user_input = entry.get()
+    send_to_arduino(user_input)
 
-# Create an entry box for the data
-entry = tk.Entry(window)
-entry.pack(pady=10)
+# ایجاد پنجره اصلی
+root = tk.Tk()
+root.title("ارسال کلمه به ال سی دی")
 
-# Create a button to send the data
-send_button = tk.Button(window, text="Send Data", command=send_data)
+# ایجاد ویجت‌ها
+label = tk.Label(root, text="کلمه را وارد کنید:")
+entry = tk.Entry(root)
+send_button = tk.Button(root, text="ارسال به ال سی دی", command=send_button_click)
+
+# پرانت‌ها برای تعیین موقعیت ویجت‌ها در صفحه
+label.pack()
+entry.pack()
 send_button.pack()
 
-# Start the main loop
-window.mainloop()
+# شروع حلقه رویداد
+root.mainloop()
