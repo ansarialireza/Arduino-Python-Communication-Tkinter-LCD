@@ -1,23 +1,16 @@
-// This code is written for Arduino Uno
-
-const int ledPin = LED_BUILTIN;  // Use the built-in LED on pin 13
+#include <LiquidCrystal.h> 
+int rs = 2, en = 3, d4 = 4, d5 = 5, d6 = 6, d7 = 7; 
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7); 
 
 void setup() {
-  Serial.begin(9600);  // Start serial communication
-  pinMode(ledPin, OUTPUT);  // Set the LED pin as output
+lcd.begin(16, 2);
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    char receivedChar = 0;
-    Serial.readBytesUntil('\n', &receivedChar, 1);  // Read until newline character
-
-    if (strcmp(receivedChar, "ON") == 0) {
-      digitalWrite(ledPin, HIGH);  // Turn on the LED
-      Serial.println("LED is ON");
-    } else if (strcmp(receivedChar, "OFF") == 0) {
-      digitalWrite(ledPin, LOW);  // Turn off the LED
-      Serial.println("LED is OFF");
-    }
-  }
+lcd.setCursor(0,0);
+lcd.print(".........ir");
+lcd.setCursor(5,1);
+lcd.print("IRAN");
+delay(1000);
+lcd.clear(); 
 }
