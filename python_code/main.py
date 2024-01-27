@@ -1,35 +1,38 @@
-import tkinter as tk
-from serial import Serial
+import serial
 import time
 
-# تنظیمات اتصال سریال
-arduino_port = "COM5"  # تنظیمات پورت اردوینو (ممکن است تغییر کند)
+# تنظیمات پورت سریال
+arduino_port = 'COM5'  # تغییر به پورت متناسب با سیستم شما
 baud_rate = 9600
 
-# تابع ارسال دستور به Arduino
-def send_to_arduino(word):
-    with Serial(arduino_port, baud_rate, timeout=1) as ser:
-        ser.write(word.encode('utf-8'))
-        time.sleep(1)  # انتظار کوتاه برای اطمینان از انجام کامل ارسال
+# اتصال به Arduino
+ser = serial.Serial(arduino_port, baud_rate, timeout=1)
 
-# تابع برای کنترل دکمه ارسال
-def send_button_click():
-    user_input = entry.get()
-    send_to_arduino(user_input)
+def turn_on_led():
+    # ارسال دستور روشن کردن به آردوینو
+    ser.write(b'ON')
+    print("LED روشن شد.")
 
-# ایجاد پنجره اصلی
-root = tk.Tk()
-root.title("ارسال کلمه به ال سی دی")
+def turn_off_led():
+    # ارسال دستور خاموش کردن به آردوینو
+    ser.write(b'OFF')
+    print("LED خاموش شد.")
 
-# ایجاد ویجت‌ها
-label = tk.Label(root, text="کلمه را وارد کنید:")
-entry = tk.Entry(root)
-send_button = tk.Button(root, text="ارسال به ال سی دی", command=send_button_click)
-
-# پرانت‌ها برای تعیین موقعیت ویجت‌ها در صفحه
-label.pack()
-entry.pack()
-send_button.pack()
-
-# شروع حلقه رویداد
-root.mainloop()
+try:
+    while True:
+        command = input("Enter 'on' to turn on the LED, 'off' to turn it off, or 'exit' to quit: ")
+        
+        if command.lower() == 'on':
+            turn_on_led()
+        elif command.lower() == 'off':
+            turn_off_led()
+        elif command.lower() == 'exit':
+            break
+        else:
+            print("دستور ناشناخته. لطفاً مجدداً تلاش کنید.")
+except KeyboardInterrupt:
+    pass
+finally:
+    # بستن اتصال به پورت سریال
+    ser.close()
+    print("اتصال به آردوینو بسته شد.")

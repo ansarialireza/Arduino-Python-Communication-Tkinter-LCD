@@ -1,31 +1,23 @@
-#include <LiquidCrystal.h>
+// This code is written for Arduino Uno
 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+const int ledPin = LED_BUILTIN;  // Use the built-in LED on pin 13
 
 void setup() {
-    lcd.begin(16, 2);
-    Serial.begin(9600); // شروع ارتباط با سریال با سرعت 9600 بیت در ثانیه
+  Serial.begin(9600);  // Start serial communication
+  pinMode(ledPin, OUTPUT);  // Set the LED pin as output
 }
 
 void loop() {
-    if (Serial.available() > 0) {
-        // دریافت کلمه از سریال
-        String receivedWord = Serial.readString();
+  if (Serial.available() > 0) {
+    char receivedChar = 0;
+    Serial.readBytesUntil('\n', &receivedChar, 1);  // Read until newline character
 
-        // نمایش کلمه بر روی LCD
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print(receivedWord);
-        Serial.println(receivedWord);
-
-
-        // حرکت افقی
-        for (int i = 0; i < 16; i++) {
-            lcd.scrollDisplayLeft();
-            delay(400);
-        }
-
-        // ارسال تأیید به کامپیوتر
-        Serial.println("Word received successfully");
+    if (strcmp(receivedChar, "ON") == 0) {
+      digitalWrite(ledPin, HIGH);  // Turn on the LED
+      Serial.println("LED is ON");
+    } else if (strcmp(receivedChar, "OFF") == 0) {
+      digitalWrite(ledPin, LOW);  // Turn off the LED
+      Serial.println("LED is OFF");
     }
+  }
 }
