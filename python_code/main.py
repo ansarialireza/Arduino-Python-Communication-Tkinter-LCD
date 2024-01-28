@@ -1,38 +1,50 @@
+import tkinter as tk
+from tkinter import messagebox
 import serial
 import time
 
-# تنظیمات پورت سریال
-arduino_port = 'COM5'  # تغییر به پورت متناسب با سیستم شما
-baud_rate = 9600
+# اتصال به پورت سریال که Arduino به آن وصل شده است
+ser = serial.Serial('COM5', 9600)  # COMx را با پورت واقعی متصل به Arduino جایگزین کنید
 
-# اتصال به Arduino
-ser = serial.Serial(arduino_port, baud_rate, timeout=1)
+# انتظار برای اتصال Arduino
+time.sleep(2)
 
-def turn_on_led():
-    # ارسال دستور روشن کردن به آردوینو
-    ser.write(b'ON')
-    print("LED روشن شد.")
+def send_text_to_lcd():
+    # دریافت متن از باکس و ارسال به Arduino برای نمایش در LCD
+    text_line1 = entry_line1.get()
+    text_line2 = entry_line2.get()
 
-def turn_off_led():
-    # ارسال دستور خاموش کردن به آردوینو
-    ser.write(b'OFF')
-    print("LED خاموش شد.")
+    # ارسال متن به Arduino برای نمایش در LCD
+    ser.write(text_line1.encode('utf-8'))
+    ser.write(b'\n')  # ارسال کاراکتر جداکننده بین خطوط
+    ser.write(text_line2.encode('utf-8'))
 
-try:
-    while True:
-        command = input("Enter 'on' to turn on the LED, 'off' to turn it off, or 'exit' to quit: ")
-        
-        if command.lower() == 'on':
-            turn_on_led()
-        elif command.lower() == 'off':
-            turn_off_led()
-        elif command.lower() == 'exit':
-            break
-        else:
-            print("دستور ناشناخته. لطفاً مجدداً تلاش کنید.")
-except KeyboardInterrupt:
-    pass
-finally:
-    # بستن اتصال به پورت سریال
-    ser.close()
-    print("اتصال به آردوینو بسته شد.")
+    messagebox.showinfo("Success", "Text sent to Arduino successfully!")
+
+# ایجاد پنجره اصلی
+root = tk.Tk()
+root.title("Arduino LCD Display")
+
+# ایجاد باکس‌ها و دکمه
+label_line1 = tk.Label(root, text="Line 1:")
+entry_line1 = tk.Entry(root)
+
+label_line2 = tk.Label(root, text="Line 2:")
+entry_line2 = tk.Entry(root)
+
+send_button = tk.Button(root, text="Send to Arduino", command=send_text_to_lcd)
+
+# تنظیم موقعیت باکس‌ها و دکمه در پنجره
+label_line1.grid(row=0, column=0, padx=10, pady=10, sticky="e")
+entry_line1.grid(row=0, column=1, padx=10, pady=10)
+
+label_line2.grid(row=1, column=0, padx=10, pady=10, sticky="e")
+entry_line2.grid(row=1, column=1, padx=10, pady=10)
+
+send_button.grid(row=2, column=1, pady=20)
+
+# حلقه اصلی پنجره
+root.mainloop()
+
+# بستن اتصال سریال هنگام بسته شدن پنجره
+ser.close()
