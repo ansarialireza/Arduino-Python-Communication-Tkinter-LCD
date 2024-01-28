@@ -25,9 +25,9 @@ void setup() {
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("My GitHub address:");
+  lcd.print("Hi, GitHub addr:");
   lcd.setCursor(0, 1);
-  lcd.print("ansarialireza");
+  lcd.print(" ansarialireza");
 }
 
 void loop() {
