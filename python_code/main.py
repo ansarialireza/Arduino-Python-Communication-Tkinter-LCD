@@ -80,7 +80,7 @@ class ArduinoLCDApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    port = 'COM10'  # Corrected: COM10 should be a string
+    port = 'COM10'  # COM10 should be a string
     baud_rate = 9600
     app = ArduinoLCDApp(port, baud_rate, root)
     root.protocol("WM_DELETE_WINDOW", app.close_serial_connection)
